@@ -19,9 +19,10 @@ def min_nb_required(line, color) -> int:
     res = cube_number_list(line, color)
     return max([int(nb) for nb in res])
 
+
 def part_1(filename: str) -> int:
     sum = 0
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, "r", encoding="utf-8") as f:
         for line in f:
             game_id = re.findall(r"(\w+(?=:))", line)
             assert len(game_id) == 1
@@ -33,9 +34,11 @@ def part_1(filename: str) -> int:
 
 def part_2(filename: str) -> int:
     sum = 0
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, "r", encoding="utf-8") as f:
         for line in f:
-            sum += math.prod([min_nb_required(line, color) for color in max_cube_possible])
+            sum += math.prod(
+                [min_nb_required(line, color) for color in max_cube_possible]
+            )
 
     return sum
 
