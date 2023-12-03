@@ -1,4 +1,3 @@
-import typing as T
 import re
 
 LINES = []
@@ -9,6 +8,14 @@ def setup_line(filename: str):
     with open(filename, "r", encoding="utf-8") as f:
         for line in f:
             LINES.append(line)
+
+
+def setup_pattern(filename: str, pattern: str):
+    lines = []
+    with open(filename, "r", encoding="utf-8") as f:
+        for line in f:
+            lines.append(re.finditer(pattern, line))
+    return lines
 
 
 def part1(filename: str) -> int:
@@ -38,21 +45,43 @@ def part1(filename: str) -> int:
                         for char in LINES[i + 1][check_start:check_end]
                     ]
                 )
-                # print(LINES[i][word.start():word.end()])
-                # print(same_line)
-                if same_line:
-                    print(LINES[i][check_start])
-                    print(LINES[i][check_end])
-                # print(pre_line)
-                # print(next_line)
                 if same_line or pre_line or next_line:
-                    print(f"Nb to add: {LINES[i][word.start():word.end()]}")
                     sum += int(LINES[i][word.start() : word.end()])
+    return sum
+
+
+def part2(filename: str) -> int:
+    sum = 0
+    gears = setup_pattern(filename, r"\*")
+    for i, gear_line in enumerate(gears):
+        for gear in gear_line:
+            number_lines = setup_pattern(filename, r"\w+")
+            counter = 0
+            prod = 1
+            for number in number_lines[i]:
+                if gear.start() in range(number.start() - 1, number.end() + 1):
+                    counter += 1
+                    prod *= int(LINES[i][number.start() : number.end()])
+            if i > 0:
+                for number in number_lines[i - 1]:
+                    if gear.start() in range(number.start() - 1, number.end() + 1):
+                        counter += 1
+                        prod *= int(LINES[i - 1][number.start() : number.end()])
+            if i < len(LINES) - 1:
+                for number in number_lines[i + 1]:
+                    if gear.start() in range(number.start() - 1, number.end() + 1):
+                        counter += 1
+                        prod *= int(LINES[i + 1][number.start() : number.end()])
+
+            if counter == 2:
+                sum += prod
     return sum
 
 
 if __name__ == "__main__":
     setup_line("example")
     print(f"Part 1 example: {part1('example')}")
+    print(f"Part 2 example: {part2('example')}")
     setup_line("input")
     print(f"Part 1 result: {part1('input')}")
+    print(f"Part 2 result: {part2('input')}")
